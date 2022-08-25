@@ -15,7 +15,7 @@ Prof. Alexander Robert Kutzke
 
 # Avaliação Flag Game
 
-Utilize o projeto já existente nesse repositório e implemente a aplicação abaixo:
+Utilize o projeto já existente nesse repositório e implemente a aplicação abaixo. O jogo consiste em 10 perguntas com 4 opções para identificação de qual país a bandeira mostrada pertence. Cada acerto soma 1 ponto. Ao final, mostra-se a pontuação e dá a opção de iniciar novamente ou encerrar voltando à tela inicial.
 
 ![Flag Game](images/flag_game.gif)
 
