@@ -89,7 +89,7 @@ Exemplo:
 Para acessar as pontuações registradas para o jogo no modo normal, o aluno com GRR 20220000 deve utilizar o seguinte endpoint:
 
 ```
-GET http://200.236.3.126:3000/scoreboards/20220000/scores 
+GET http://200.236.3.126:9999/scoreboards/20220000/scores 
 ```
 
 Para adição de uma nova pontuação, os campos a seguir são esperados:
