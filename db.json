@@ -4,8 +4,19 @@
       "name": "t",
       "score": 4,
       "id": "BPdEkldPmow"
+    },
+    {
+      "name": "teste",
+      "score": 4,
+      "id": "jZgOSJ7d-nE"
     }
   ],
-  "timedscores": [],
+  "timedscores": [
+    {
+      "name": "testeeee",
+      "score": 4,
+      "id": "dZ2G58jNn2M"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }
