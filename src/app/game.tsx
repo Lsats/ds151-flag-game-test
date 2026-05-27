@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, Button, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { countries } from '../data/countries';
@@ -18,6 +18,8 @@ interface Country {
 
 type GameStatus = 'question' | 'hit' | 'miss' | 'end';
 
+const api = 'http://localhost:3000/scores';
+
 const GameScreen = () => {
   const [points, setPoints] = useState<number>(0);
   const [step, setStep] = useState<number>(1);
@@ -25,41 +27,76 @@ const GameScreen = () => {
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [options, setOptions] = useState<Country[]>([]);
   const [chosenOption, setChosenOption] = useState<number>(-1);
-  
+
   const router = useRouter();
   const { username } = useLocalSearchParams<{ username: string }>();
 
+const saveScore = async (finalScore: number) => {
+    try {
+     await fetch(api, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: username,
+        score: finalScore,
+      }),
+    });
+   } catch (error) {
+    console.log(error);
+    Alert.alert('Erro', 'Não foi possível salvar a pontuação.');
+    } finally {
+    setStatus('end');
+    }
+  };
   const nextStep = () => {
-    if (step > 10) setStatus('end');
-    else setStatus('question');
     setChosenOption(-1);
-  }
+    setStatus('question');
+  };
 
-  const confirmTry = () => {
-    if (selectedCountry && options[chosenOption] && selectedCountry.name === options[chosenOption].name) {
-      setPoints((p) => p + 1)
-      setStatus('hit')
+  const confirmTry = async () => {
+    let newPoints = points;
+
+    const isCorrect =
+      selectedCountry &&
+      options[chosenOption] &&
+      selectedCountry.name === options[chosenOption].name;
+
+    if (isCorrect) {
+      newPoints = points + 1;
+      setPoints(newPoints);
+      setStatus('hit');
+    } else {
+      setStatus('miss');
     }
-    else {
-      setStatus('miss')
+
+    if (step === 10) {
+      await saveScore(newPoints);
+      return;
     }
+
     setStep((s) => s + 1);
-  }
+  };
 
   useEffect(() => {
     if (status === 'question') {
-      const randomCountry = countries[Math.floor(Math.random() * countries.length)];
+      const randomCountry =
+        countries[Math.floor(Math.random() * countries.length)];
+
       setSelectedCountry(randomCountry);
     }
   }, [status]);
 
   useEffect(() => {
     if (selectedCountry) {
-      let optionsArray = _.sample(countries, 3);
-      optionsArray.push(selectedCountry);
-      setOptions(_.shuffle(optionsArray));
+    let optionsArray = (_ as any).sample(countries, 3);
+
+    optionsArray.push(selectedCountry);
+
+    setOptions((_ as any).shuffle(optionsArray));
     }
-  }, [selectedCountry])
+  }, [selectedCountry]);
 
   if (status !== 'question') {
     return (
@@ -78,17 +115,17 @@ const GameScreen = () => {
     );
   }
 
-  if (!selectedCountry) return (<Text>Carregando ...</Text>)
+  if (!selectedCountry) return <Text>Carregando ...</Text>;
 
   return (
     <SafeAreaView style={styles.container}>
-      <GameHeader 
+      <GameHeader
         onClose={() => router.replace('/')}
         step={step}
         points={points}
       />
-      
-      <FlagQuestion 
+
+      <FlagQuestion
         username={username || 'Jogador'}
         countryCode={selectedCountry.code}
       />
@@ -114,7 +151,7 @@ const GameScreen = () => {
       </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
